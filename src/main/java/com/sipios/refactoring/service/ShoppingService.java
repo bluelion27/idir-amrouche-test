@@ -1,5 +1,7 @@
 package com.sipios.refactoring.service;
 
+import com.sipios.refactoring.exception.ParameterException;
+import com.sipios.refactoring.exception.PriceTooHighException;
 import com.sipios.refactoring.model.Body;
 import com.sipios.refactoring.model.CustomerType;
 import com.sipios.refactoring.model.Item;
@@ -29,7 +31,7 @@ public class ShoppingService {
                 discount = 0.5;
                 break;
             default:
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                throw new ParameterException("Unknown Customer Type");
         }
 
         return discount;
@@ -83,7 +85,7 @@ public class ShoppingService {
                 seasonDiscount = 0.9;
                 break;
             default:
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                throw new ParameterException("Unkown Item Type");
         }
 
         if (isDiscountSeason()) {
@@ -91,5 +93,26 @@ public class ShoppingService {
         }
 
         return unitPrice;
+    }
+
+
+    public void checkPriceLimit(double price, CustomerType customerType) {
+        if (customerType == CustomerType.STANDARD_CUSTOMER) {
+            if (price > 200) {
+                throw new PriceTooHighException("Price (" + price + ") is too high for standard customer");
+            }
+        } else if (customerType == CustomerType.PREMIUM_CUSTOMER) {
+            if (price > 800) {
+                throw new PriceTooHighException("Price (" + price + ") is too high for premium customer");
+            }
+        } else if (customerType == CustomerType.PLATINUM_CUSTOMER) {
+            if (price > 2000) {
+                throw new PriceTooHighException("Price (" + price + ") is too high for platinum customer");
+            }
+        } else {
+            if (price > 200) {
+                throw new PriceTooHighException("Price (" + price + ") is too high for standard customer");
+            }
+        }
     }
 }
