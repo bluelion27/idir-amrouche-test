@@ -3,6 +3,11 @@ package com.sipios.refactoring.controller;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import com.sipios.refactoring.model.Body;
+import com.sipios.refactoring.model.CustomerType;
+import com.sipios.refactoring.model.Item;
+import com.sipios.refactoring.model.ItemType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,11 +33,11 @@ public class ShoppingController {
         cal.setTime(date);
 
         // Compute discount for customer
-        if (b.getType().equals("STANDARD_CUSTOMER")) {
+        if (b.getType() == CustomerType.STANDARD_CUSTOMER) {
             d = 1;
-        } else if (b.getType().equals("PREMIUM_CUSTOMER")) {
+        } else if (b.getType() == CustomerType.PREMIUM_CUSTOMER) {
             d = 0.9;
-        } else if (b.getType().equals("PLATINUM_CUSTOMER")) {
+        } else if (b.getType() == CustomerType.PLATINUM_CUSTOMER) {
             d = 0.5;
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -59,16 +64,13 @@ public class ShoppingController {
             for (int i = 0; i < b.getItems().length; i++) {
                 Item it = b.getItems()[i];
 
-                if (it.getType().equals("TSHIRT")) {
+                if (it.getType() == ItemType.TSHIRT) {
                     p += 30 * it.getNb() * d;
-                } else if (it.getType().equals("DRESS")) {
+                } else if (it.getType() == ItemType.DRESS) {
                     p += 50 * it.getNb() * d;
-                } else if (it.getType().equals("JACKET")) {
+                } else if (it.getType() == ItemType.JACKET) {
                     p += 100 * it.getNb() * d;
                 }
-                // else if (it.getType().equals("SWEATSHIRT")) {
-                //     price += 80 * it.getNb();
-                // }
             }
         } else {
             if (b.getItems() == null) {
@@ -78,29 +80,26 @@ public class ShoppingController {
             for (int i = 0; i < b.getItems().length; i++) {
                 Item it = b.getItems()[i];
 
-                if (it.getType().equals("TSHIRT")) {
+                if (it.getType() == ItemType.TSHIRT) {
                     p += 30 * it.getNb() * d;
-                } else if (it.getType().equals("DRESS")) {
+                } else if (it.getType() == ItemType.DRESS) {
                     p += 50 * it.getNb() * 0.8 * d;
-                } else if (it.getType().equals("JACKET")) {
+                } else if (it.getType() == ItemType.JACKET) {
                     p += 100 * it.getNb() * 0.9 * d;
                 }
-                // else if (it.getType().equals("SWEATSHIRT")) {
-                //     price += 80 * it.getNb();
-                // }
             }
         }
 
         try {
-            if (b.getType().equals("STANDARD_CUSTOMER")) {
+            if (b.getType() == CustomerType.STANDARD_CUSTOMER) {
                 if (p > 200) {
                     throw new Exception("Price (" + p + ") is too high for standard customer");
                 }
-            } else if (b.getType().equals("PREMIUM_CUSTOMER")) {
+            } else if (b.getType() == CustomerType.PREMIUM_CUSTOMER) {
                 if (p > 800) {
                     throw new Exception("Price (" + p + ") is too high for premium customer");
                 }
-            } else if (b.getType().equals("PLATINUM_CUSTOMER")) {
+            } else if (b.getType() == CustomerType.PLATINUM_CUSTOMER) {
                 if (p > 2000) {
                     throw new Exception("Price (" + p + ") is too high for platinum customer");
                 }
@@ -117,60 +116,5 @@ public class ShoppingController {
     }
 }
 
-class Body {
 
-    private Item[] items;
-    private String type;
 
-    public Body(Item[] is, String t) {
-        this.items = is;
-        this.type = t;
-    }
-
-    public Body() {}
-
-    public Item[] getItems() {
-        return items;
-    }
-
-    public void setItems(Item[] items) {
-        this.items = items;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-}
-
-class Item {
-
-    private String type;
-    private int nb;
-
-    public Item() {}
-
-    public Item(String type, int quantity) {
-        this.type = type;
-        this.nb = quantity;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public int getNb() {
-        return nb;
-    }
-
-    public void setNb(int nb) {
-        this.nb = nb;
-    }
-}
